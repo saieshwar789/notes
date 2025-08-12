@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-left">
+                <i class='bx bxs-note logo-icon'></i>
+                <h1>Notes</h1>
+            </div>
+            <div class="header-right">
+                <div class="view-switcher">
+                    <button class="view-btn grid-view-btn active" id="grid-view-btn"><i class='bx bxs-grid-alt'></i></button>
+                    <button class="view-btn list-view-btn" id="list-view-btn"><i class='bx bx-list-ul'></i></button>
+                </div>
+                <button class="new-note-btn" id="new-note-btn">
+                    <i class='bx bx-plus'></i> New Note
+                </button>
+            </div>
+        </header>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar-container">
+            <i class='bx bx-search search-icon'></i>
+            <input type="text" id="search-input" placeholder="Search your notes...">
+        </div>
+
+        <!-- NOTES GRID -->
+        <main class="notes-grid" id="notes-grid">
+            <!-- Notes will be dynamically inserted here -->
+        </main>
+    </div>
+
+    <!-- NOTE EDITOR MODAL -->
+    <div class="modal-container" id="modal-container">
+        <div class="modal">
+            <input type="hidden" id="note-id-input">
+            <input type="text" id="note-title-input" placeholder="Title">
+            <textarea id="note-content-input" placeholder="Start writing..."></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn delete" id="delete-note-btn">Delete</button>
+                <button class="modal-btn save" id="save-note-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
