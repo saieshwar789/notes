@@ -8,6 +8,8 @@
     --accent-color: #3b82f6;
     --accent-color-hover: #2563eb;
     --border-color: #2c2c2c;
+    /* **** NEW VARIABLE FOR DELETE COLOR **** */
+    --delete-color: #ef4444; 
 }
 
 body {
@@ -158,7 +160,7 @@ h1 {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.5em; /* Fallback for min-height */
+    min-height: 2.5em; 
 }
 
 .note-footer {
@@ -241,8 +243,9 @@ h1 {
     color: white;
 }
 
+/* **** NEW STYLES FOR DELETE BUTTON **** */
 .modal-btn.delete {
-    background-color: #ef4444;
+    background-color: var(--delete-color);
     color: white;
-    margin-right: auto; /* Pushes delete button to the left */
+    margin-right: auto; /* This pushes it to the far left */
 }
