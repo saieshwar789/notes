@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const noteTitleInput = document.getElementById("note-title-input");
     const noteContentInput = document.getElementById("note-content-input");
     const saveNoteBtn = document.getElementById("save-note-btn");
+    // **** NEW: SELECT THE DELETE BUTTON ****
     const deleteNoteBtn = document.getElementById("delete-note-btn");
 
     // --- State Management ---
@@ -18,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Functions ---
 
-    // Get notes from localStorage
     const getNotesFromStorage = () => {
         try {
             const notes = JSON.parse(localStorage.getItem("notes-app-data"));
@@ -28,12 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Save notes to localStorage
     const saveNotesToStorage = (notes) => {
         localStorage.setItem("notes-app-data", JSON.stringify(notes));
     };
 
-    // Create HTML for a single note card
     const createNoteElement = (note) => {
         const wordCount = note.content.trim().split(/\s+/).filter(Boolean).length;
         const date = new Date(note.id).toLocaleDateString("en-US", { day: 'numeric', month: 'long' });
@@ -46,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <h3 class="note-title">${note.title || 'Untitled'}</h3>
             <p class="note-content-preview">${note.content}</p>
             <div class="note-footer">
-                <span class="note-date">Today</span> <!-- Simplified date -->
+                <span class="note-date">Today</span> 
                 <span class="note-words">${wordCount} words</span>
             </div>
         `;
@@ -55,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return noteCard;
     };
 
-    // Render notes to the grid
     const renderNotes = () => {
         notesGrid.innerHTML = "";
         const filteredNotes = currentNotes.filter(note => 
@@ -63,54 +60,53 @@ document.addEventListener("DOMContentLoaded", () => {
             note.content.toLowerCase().includes(currentFilter)
         );
 
-        if (filteredNotes.length === 0) {
-            notesGrid.innerHTML = '<p style="color: var(--secondary-text-color);">No notes found. Create one!</p>';
-            return;
+        if (filteredNotes.length === 0 && currentFilter === "") {
+             notesGrid.innerHTML = '<p style="color: var(--secondary-text-color);">Your notes will appear here. Click "+ New Note" to start.</p>';
+        } else if (filteredNotes.length === 0) {
+            notesGrid.innerHTML = `<p style="color: var(--secondary-text-color);">No notes found for "${currentFilter}".</p>`;
+        } else {
+            filteredNotes.forEach(note => {
+                notesGrid.appendChild(createNoteElement(note));
+            });
         }
-
-        filteredNotes.forEach(note => {
-            notesGrid.appendChild(createNoteElement(note));
-        });
     };
-
-    // Open the modal to edit/create a note
+    
+    // **** MODIFIED: SHOW/HIDE DELETE BUTTON ****
     const openModal = (note = null) => {
-        if (note) {
+        if (note) { // Editing an existing note
             noteIdInput.value = note.id;
             noteTitleInput.value = note.title;
             noteContentInput.value = note.content;
-            deleteNoteBtn.style.display = 'block';
-        } else {
+            deleteNoteBtn.style.display = 'block'; // Show delete button
+        } else { // Creating a new note
             noteIdInput.value = "";
             noteTitleInput.value = "";
             noteContentInput.value = "";
-            deleteNoteBtn.style.display = 'none';
+            deleteNoteBtn.style.display = 'none'; // Hide delete button
         }
         modalContainer.classList.add("show");
     };
 
-    // Close the modal
     const closeModal = () => {
         modalContainer.classList.remove("show");
     };
 
-    // Handle saving a note
     const handleSaveNote = () => {
         const id = noteIdInput.value;
         const title = noteTitleInput.value.trim();
         const content = noteContentInput.value.trim();
 
-        if (id) { // Update existing note
+        if (id) {
             currentNotes = currentNotes.map(note => 
                 note.id == id ? { ...note, title, content } : note
             );
-        } else { // Create new note
+        } else {
             const newNote = {
-                id: new Date().getTime(), // Unique ID based on timestamp
-                title,
+                id: new Date().getTime(),
+                title: title || "Untitled", // Default title
                 content
             };
-            currentNotes.unshift(newNote); // Add to the beginning
+            currentNotes.unshift(newNote);
         }
         
         saveNotesToStorage(currentNotes);
@@ -118,12 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
         closeModal();
     };
 
-    // Handle deleting a note
+    // **** NEW: FUNCTION TO HANDLE NOTE DELETION ****
     const handleDeleteNote = () => {
         const id = noteIdInput.value;
         if (!id) return;
 
-        if (confirm("Are you sure you want to delete this note?")) {
+        // Add a confirmation dialog
+        if (confirm("Are you sure you want to delete this note? This action cannot be undone.")) {
             currentNotes = currentNotes.filter(note => note.id != id);
             saveNotesToStorage(currentNotes);
             renderNotes();
@@ -134,26 +131,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Event Listeners ---
     newNoteBtn.addEventListener("click", () => openModal());
     saveNoteBtn.addEventListener("click", handleSaveNote);
+    // **** NEW: EVENT LISTENER FOR DELETE BUTTON ****
     deleteNoteBtn.addEventListener("click", handleDeleteNote);
+    
     searchInput.addEventListener("input", (e) => {
         currentFilter = e.target.value.toLowerCase();
         renderNotes();
     });
 
-    // Close modal if clicking on the background
     modalContainer.addEventListener("click", (e) => {
         if (e.target === modalContainer) {
             closeModal();
         }
     });
     
-    // Close modal with Escape key
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && modalContainer.classList.contains("show")) {
             closeModal();
         }
     });
-
 
     // --- Initial Load ---
     currentNotes = getNotesFromStorage();
